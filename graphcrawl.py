@@ -14,7 +14,7 @@ def get_data():
     option = ChromeOptions()
     option.add_argument('--headless')
     browser=Chrome(options=option)
-    mainw='https://e-hentai.org/g/2239530/6408597ee1/'
+    mainw='' # Main URl Input
     browser.get(mainw)
     xp='/html/body/div[4]/table/tbody/tr/td/a'
     webs=browser.find_elements(by='xpath', value=xp)
@@ -75,7 +75,7 @@ def remove_file(old_path, new_path):
 if __name__ == '__main__':
     chromedriver.install()
     old_path='./image'
-    folder_name='猎美记之美奴顾雪琴'
+    folder_name=''# Write Folder name
     new_path=f"D:/BaiduNetdiskDownload/manca/Artist/{folder_name}"
     if not os.path.exists(new_path):
     
