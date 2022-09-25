@@ -13,19 +13,25 @@ import chromedriver_autoinstaller as chromedriver
 def get_data():
     option = ChromeOptions()
     option.add_argument('--headless')
+    option.add_argument('--ignore-certificate-errors')
+    option.add_argument('--ignore-ssl-errors')
     browser=Chrome(options=option)
-    mainw='' # Main URl Input
+    mainw='https://e-hentai.org/g/2053941/8d1cdba592/'
     browser.get(mainw)
     xp='/html/body/div[4]/table/tbody/tr/td/a'
     webs=browser.find_elements(by='xpath', value=xp)
-    urls = [element.get_attribute('href') for element in webs]
+    nums=[]
+    for element in webs:
+        if element.text != ">":
+        
+            nums.append(int(element.text) )
+    huge_urls_set=[ f'{mainw}'+f'?p={i}' for i in range(max(nums))]
     
     web_data=[]
-    if len(urls)==1:
-        leng=len(urls)
-    else :
-        leng=len(urls)-1
-    for url in urls[:leng]:
+
+
+
+    for url in huge_urls_set:
         
         Xpath='//*[@id="gdt"]/div/div/a'
         browser=Chrome(options=option)
@@ -33,7 +39,7 @@ def get_data():
 
         res=browser.find_elements(by='xpath', value=Xpath)
         web_data+=[element.get_attribute('href') for element in res]
-    
+
     return web_data
 
 def get_graph(web):
@@ -75,7 +81,7 @@ def remove_file(old_path, new_path):
 if __name__ == '__main__':
     chromedriver.install()
     old_path='./image'
-    folder_name=''# Write Folder name
+    folder_name='[鸟2018] 新坑 番外'
     new_path=f"D:/BaiduNetdiskDownload/manca/Artist/{folder_name}"
     if not os.path.exists(new_path):
     
