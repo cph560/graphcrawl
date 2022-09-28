@@ -6,6 +6,7 @@ import shutil
 from selenium.webdriver.common.by import By
 from selenium.webdriver import Chrome, ChromeOptions
 
+import concurrent.futures
 import chromedriver_autoinstaller as chromedriver
 
 
@@ -16,7 +17,7 @@ def get_data():
     option.add_argument('--ignore-certificate-errors')
     option.add_argument('--ignore-ssl-errors')
     browser=Chrome(options=option)
-    mainw='https://e-hentai.org/g/2053941/8d1cdba592/'
+    mainw='https://e-hentai.org/g/2335475/65110d4f5e/'
     browser.get(mainw)
     xp='/html/body/div[4]/table/tbody/tr/td/a'
     webs=browser.find_elements(by='xpath', value=xp)
@@ -27,22 +28,30 @@ def get_data():
             nums.append(int(element.text) )
     huge_urls_set=[ f'{mainw}'+f'?p={i}' for i in range(max(nums))]
     
+    
+    return huge_urls_set
+
+def download(url):
+    option = ChromeOptions()
+    option.add_argument('--headless')
+    option.add_argument('--ignore-certificate-errors')
+    option.add_argument('--ignore-ssl-errors')
+
     web_data=[]
+    
+    
+    Xpath='//*[@id="gdt"]/div/div/a'
+    browser=Chrome(options=option)
+    browser.get(url)
 
+    res=browser.find_elements(by='xpath', value=Xpath)
+    web_data+=[element.get_attribute('href') for element in res]
 
+    get_graph(web_data)
 
-    for url in huge_urls_set:
-        
-        Xpath='//*[@id="gdt"]/div/div/a'
-        browser=Chrome(options=option)
-        browser.get(url)
-
-        res=browser.find_elements(by='xpath', value=Xpath)
-        web_data+=[element.get_attribute('href') for element in res]
-
-    return web_data
 
 def get_graph(web):
+    j=0
     for i in web:
         try:
             kei=i.split('/')
@@ -57,9 +66,11 @@ def get_graph(web):
             res=browser.find_elements(by='xpath', value=Xpath)
             
             src=res[0].get_attribute('src')
+            print('downloading....%s : NO.%s' % (content,str(j)))
             r = requests.get(src)
             with open(f'./image/{content}.jpg', 'wb') as f:
                 f.write(r.content)   
+            j+= 1
         except:
             print(f'Error at {kei[-1]}')
 
@@ -78,10 +89,19 @@ def remove_file(old_path, new_path):
         shutil.move(src, dst)
     print('Copy complete')
 
+
+def download_all_images(huge_urls_set):
+    
+    
+    works = len(huge_urls_set)
+    with concurrent.futures.ThreadPoolExecutor(works) as exector:
+        for url in huge_urls_set:
+            exector.submit(download,url)
+
 if __name__ == '__main__':
     chromedriver.install()
     old_path='./image'
-    folder_name='[鸟2018] 新坑 番外'
+    folder_name='The Goblin'
     new_path=f"D:/BaiduNetdiskDownload/manca/Artist/{folder_name}"
     if not os.path.exists(new_path):
     
@@ -91,7 +111,8 @@ if __name__ == '__main__':
         os.makedirs('./image')
     data=get_data()
     
-    get_graph(data)
+    download_all_images(data)
+
     remove_file(old_path, new_path)
 
     
