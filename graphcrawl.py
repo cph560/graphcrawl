@@ -1,6 +1,6 @@
 from re import I
 import requests
-
+import sys
 import os
 import shutil
 from selenium.webdriver.common.by import By
@@ -11,13 +11,14 @@ import chromedriver_autoinstaller as chromedriver
 
 
 
-def get_data():
+def get_data(web):
     option = ChromeOptions()
     option.add_argument('--headless')
     option.add_argument('--ignore-certificate-errors')
     option.add_argument('--ignore-ssl-errors')
     browser=Chrome(options=option)
-    mainw='https://e-hentai.org/g/2335475/65110d4f5e/'
+    huge_urls_set = []
+    mainw = web
     browser.get(mainw)
     xp='/html/body/div[4]/table/tbody/tr/td/a'
     webs=browser.find_elements(by='xpath', value=xp)
@@ -26,9 +27,8 @@ def get_data():
         if element.text != ">":
         
             nums.append(int(element.text) )
-    huge_urls_set=[ f'{mainw}'+f'?p={i}' for i in range(max(nums))]
-    
-    
+    huge_urls_set += [ f'{mainw}'+f'?p={i}' for i in range(max(nums))]
+
     return huge_urls_set
 
 def download(url):
@@ -74,10 +74,10 @@ def get_graph(web):
         except:
             print(f'Error at {kei[-1]}')
 
-    print('Download Complete')
+    print('Partial Download Complete')
 
 
-def remove_file(old_path, new_path):
+def remove_file(old_path, new_path, partial):
 
     filelist = os.listdir(old_path) #列出该目录下的所有文件,listdir返回的文件列表是不包含路径的。
     
@@ -87,8 +87,8 @@ def remove_file(old_path, new_path):
         dst = os.path.join(new_path, file)
 
         shutil.move(src, dst)
-    print('Copy complete')
-
+    print(partial+'Copy complete')
+    
 
 def download_all_images(huge_urls_set):
     
@@ -96,23 +96,31 @@ def download_all_images(huge_urls_set):
     works = len(huge_urls_set)
     with concurrent.futures.ThreadPoolExecutor(works) as exector:
         for url in huge_urls_set:
-            exector.submit(download,url)
+            exector.submit(download, url)
 
 if __name__ == '__main__':
     chromedriver.install()
     old_path='./image'
-    folder_name='The Goblin'
-    new_path=f"D:/BaiduNetdiskDownload/manca/Artist/{folder_name}"
-    if not os.path.exists(new_path):
-    
-        os.makedirs(new_path)
-    if not os.path.exists('./image'):
-    
-        os.makedirs('./image')
-    data=get_data()
-    
-    download_all_images(data)
+    web_url = ['https://e-hentai.org/g/1389746/c5845d7174/', 'https://e-hentai.org/g/1958821/582b1b5327/']
+    folder_name=[' [Abarenbow Tengu (Izumi Yuujiro)] Nuko Musume vs Youkai Shirikabe', '[Abarenbow Tengu (Izumi Yuujiro)] Nuko Musume vs Youkai Shirikabe 2']
+    if len(web_url) != len(folder_name):
+        print(f'length of web_url:{len(web_url)} != length of folder_name:{len(folder_name)}')
+        sys.exit()
+        
+        
+    for num in range(len(web_url)):
+        new_path=f"D:/BaiduNetdiskDownload/manca/Artist/{folder_name[num]}"
 
-    remove_file(old_path, new_path)
+        if not os.path.exists(new_path):
+
+            os.makedirs(new_path)
+        if not os.path.exists('./image'):
+
+            os.makedirs('./image')
+        data=get_data(web_url[num])
+
+        download_all_images(data)
+
+        remove_file(old_path, new_path, f'{num+1}/{len(web_url)}')
 
     
