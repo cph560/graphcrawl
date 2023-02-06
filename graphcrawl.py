@@ -101,8 +101,8 @@ def download_all_images(huge_urls_set):
 if __name__ == '__main__':
     chromedriver.install()
     old_path='./image'
-    web_url = ['https://e-hentai.org/g/1389746/c5845d7174/', 'https://e-hentai.org/g/1958821/582b1b5327/']
-    folder_name=[' [Abarenbow Tengu (Izumi Yuujiro)] Nuko Musume vs Youkai Shirikabe', '[Abarenbow Tengu (Izumi Yuujiro)] Nuko Musume vs Youkai Shirikabe 2']
+    web_url = []
+    folder_name=[]
     if len(web_url) != len(folder_name):
         print(f'length of web_url:{len(web_url)} != length of folder_name:{len(folder_name)}')
         sys.exit()
