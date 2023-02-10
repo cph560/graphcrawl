@@ -22,6 +22,7 @@ def get_data(web):
     browser.get(mainw)
     xp='/html/body/div[4]/table/tbody/tr/td/a'
     webs=browser.find_elements(by='xpath', value=xp)
+    print(webs)
     nums=[]
     for element in webs:
         if element.text != ">":
@@ -103,13 +104,14 @@ if __name__ == '__main__':
     old_path='./image'
     web_url = []
     folder_name=[]
+
     if len(web_url) != len(folder_name):
         print(f'length of web_url:{len(web_url)} != length of folder_name:{len(folder_name)}')
         sys.exit()
         
         
     for num in range(len(web_url)):
-        new_path=f"D:/BaiduNetdiskDownload/manca/Artist/{folder_name[num]}"
+        new_path=f"D:/BaiduNetdiskDownload/manca/cosplay/{folder_name[num]}"
 
         if not os.path.exists(new_path):
 
