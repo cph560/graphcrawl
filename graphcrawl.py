@@ -100,6 +100,7 @@ def download_all_images(huge_urls_set):
             exector.submit(download, url)
 
 if __name__ == '__main__':
+    os.system('cmd /c "pip install --upgrade -r requirements.txt"')
     chromedriver.install()
     old_path='./image'
     web_url = []
